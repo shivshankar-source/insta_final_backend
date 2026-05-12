@@ -26,11 +26,11 @@ const __dirname = path.dirname(__filename);
 // ─── Socket.io Setup ─────────────────────────────────────────────────────────
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
-
 // Make io accessible in controllers
 app.set("io", io);
 
@@ -96,12 +96,14 @@ io.on("connection", (socket) => {
 // ─── Middleware ──────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
-
 app.use(express.json({ limit: "50mb" }));
+app.get("/", (req, res) => {
+  res.send("Backend Running");
+});
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
